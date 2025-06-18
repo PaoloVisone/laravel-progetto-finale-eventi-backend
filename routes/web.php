@@ -25,6 +25,6 @@ Route::middleware(['auth', 'verified'])
     ->prefix("admin")
     ->group(function () {
 
-        Route::get('/index', [DashboardController::class, 'index'])
+        Route::get('/', [DashboardController::class, 'index'])
             ->name("index");
     });
