@@ -47,6 +47,7 @@ class EventController extends Controller
         $newEvent->location = $data["location"];
         $newEvent->price = $data["price"];
         $newEvent->capacity = $data["capacity"];
+        $newEvent->category_id = $data["category_id"];
 
         $newEvent->save();
 
