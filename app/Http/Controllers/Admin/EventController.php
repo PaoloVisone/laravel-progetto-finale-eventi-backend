@@ -66,24 +66,41 @@ class EventController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(event $event)
     {
-        //
+
+        $categories = Category::all();
+
+        return view('events.edit', compact('event', 'categories'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Event $event)
     {
-        //
+        $data = $request->all();
+
+        $event->title = $data["title"];
+        $event->description = $data["description"];
+        $event->date_time = $data["date_time"];
+        $event->location = $data["location"];
+        $event->price = $data["price"];
+        $event->capacity = $data["capacity"];
+        $event->category_id = $data["category_id"];
+
+        $event->update();
+
+        return redirect()->route("events.show", $event);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Event $event)
     {
-        //
+        $event->delete();
+
+        return redirect()->route("events.index");
     }
 }
