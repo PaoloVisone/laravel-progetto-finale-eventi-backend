@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Event;
 use Illuminate\Http\Request;
 
@@ -24,7 +25,11 @@ class EventController extends Controller
      */
     public function create()
     {
-        //
+        // Recupera tutte le categorie dal database
+        $categories = Category::all();
+
+        // Passa le categorie alla view
+        return view('events.create', compact('categories'));
     }
 
     /**
@@ -32,7 +37,20 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+
+        $newEvent = new Event();
+
+        $newEvent->title = $data["title"];
+        $newEvent->description = $data["description"];
+        $newEvent->date_time = $data["date_time"];
+        $newEvent->location = $data["location"];
+        $newEvent->price = $data["price"];
+        $newEvent->capacity = $data["capacity"];
+
+        $newEvent->save();
+
+        return redirect()->route("events.show", $newEvent);
     }
 
     /**
@@ -40,6 +58,7 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
+        $event->load('category');
         return view('events.show', compact('event'));
     }
 

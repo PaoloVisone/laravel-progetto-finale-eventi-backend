@@ -47,6 +47,12 @@
                                 <div>{{ $event->capacity }}</div>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                        <div>
+                                <div class="fw-semibold small text-muted">Categoria</div>
+                                <div>{{ $event->category->name }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -59,7 +65,7 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="#" class="btn btn-warning disabled" aria-disabled="true">
+                        <a href="{{ route('events.edit', $event) }}" class="btn btn-warning" aria-disabled="true">
                             Modifica
                         </a>
                         <button class="btn btn-danger disabled" aria-disabled="true">
