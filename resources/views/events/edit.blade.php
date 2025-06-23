@@ -1,7 +1,5 @@
 @extends("layouts.layout")
 
-@section('title', 'Modifica Evento')
-
 @section('content')
 <div class="container mt-4">
     <div class="row justify-content-center">
