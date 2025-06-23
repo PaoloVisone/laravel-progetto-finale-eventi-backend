@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\ProfileController;
@@ -32,3 +33,6 @@ Route::middleware(['auth', 'verified'])
 
 // CRUD Events
 Route::resource('events', EventController::class);
+
+// CRUD Bookings
+Route::resource('bookings', BookingController::class);
