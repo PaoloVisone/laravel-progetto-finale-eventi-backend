@@ -1,6 +1,4 @@
-@extends("layouts.events")
-
-{{-- @section('title', 'Dettaglio Evento') --}}
+@extends("layouts.layout")
 
 @section('content')
 <div class="container py-5">
