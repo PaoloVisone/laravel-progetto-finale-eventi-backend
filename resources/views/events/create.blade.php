@@ -1,9 +1,15 @@
 @extends('layouts.events')
 
-@section('title', 'Crea Evento')
-
 @section('content')
-<div class="container mt-4">
+{{-- <div class="container mt-4"> --}}
+<div class="container-fluid my-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="mb-0">Crea Evento</h1>
+        <a href="{{ route('events.index') }}" class="btn btn-primary">
+            Torna indietro
+        </a>
+    </div>
+</div>
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -147,5 +153,5 @@
             </div>
         </div>
     </div>
-</div>
+{{-- </div> --}}
 @endsection

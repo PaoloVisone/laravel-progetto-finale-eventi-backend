@@ -1,11 +1,18 @@
 @extends("layouts.events")
 
-@section("title", "Gestione Eventi")
-
 @section("content")
 
-{{-- @dd($events); --}}
+{{--NAVBAR --}}
+<div class="container-fluid my-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="mb-0">Gestione Eventi</h1>
+        <a href="{{ route('events.create') }}" class="btn btn-primary">
+            Aggiungi Evento
+        </a>
+    </div>
+</div>
 
+{{-- TABLE --}}
 <div style="width: 90%; margin: 0 auto;">
     <table style="width: 100%; border-collapse: collapse; text-align: center; margin: 20px 0;">
         <thead>
