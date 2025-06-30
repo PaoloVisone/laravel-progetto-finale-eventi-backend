@@ -16,7 +16,7 @@
                     <h4 class="mb-0">Crea Nuovo Evento</h4>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('events.store') }}" method="POST">
+                    <form action="{{ route('events.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         
                         <!-- Titolo -->
@@ -137,6 +137,14 @@
                                 </div>
                             @enderror
                         </div>
+
+                       {{-- Immagini --}}
+                       <div class="mb-3">
+                            <label for="image" class="form-label">Immagine</label>
+                            <input type="file"
+                                    id="image"
+                                    name="image">
+                       </div>
 
                         <!-- Pulsanti -->
                         <div class="d-flex justify-content-between">

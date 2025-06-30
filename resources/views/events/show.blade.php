@@ -85,6 +85,13 @@
         </div>
     </div>
 </div>
+    
+    @if($event->image)
+    <div class="row g-4">
+        <img src="{{ asset("storage/". $event->image) }}" alt="{{ $event->title }}">
+    </div>
+    @endif
+    
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">

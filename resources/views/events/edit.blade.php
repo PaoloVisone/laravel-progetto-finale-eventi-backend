@@ -9,7 +9,7 @@
                     <h4 class="mb-0">Modifica Evento</h4>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('events.update', $event) }}" method="POST">
+                    <form action="{{ route('events.update', $event) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method("PUT")
                         
@@ -132,6 +132,19 @@
                                 </div>
                             @enderror
                         </div>
+
+                         {{-- Immagini --}}
+                       <div class="mb-3">
+                            <label for="image" class="form-label">Immagine</label>
+                            <input type="file"
+                                    id="image"
+                                    name="image">
+                                     @if($event->image)
+    <div class="row g-4">
+        <img src="{{ asset("storage/". $event->image) }}" alt="{{ $event->title }}">
+    </div>
+    @endif
+                       </div>
 
                         <!-- Pulsanti -->
                         <div class="d-flex justify-content-between">

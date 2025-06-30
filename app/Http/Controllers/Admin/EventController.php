@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
@@ -49,6 +50,12 @@ class EventController extends Controller
         $newEvent->capacity = $data["capacity"];
         $newEvent->category_id = $data["category_id"];
 
+        if (array_key_exists("image", $data)) {
+            $img_url = Storage::putFile("imgEvents", $data['image']);
+
+            $newEvent->image = $img_url;
+        }
+
         $newEvent->save();
 
         return redirect()->route("events.show", $newEvent);
@@ -89,6 +96,15 @@ class EventController extends Controller
         $event->capacity = $data["capacity"];
         $event->category_id = $data["category_id"];
 
+        if (array_key_exists("image", $data)) {
+            if ($event->image) {
+                Storage::delete($event->image);
+            }
+
+            $img_url = Storage::putFile("imgEvents", $data['image']);
+            $event->image = $img_url;
+        }
+
         $event->update();
 
         return redirect()->route("events.show", $event);
@@ -99,6 +115,11 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
+
+        if (!empty($event->image)) {
+            Storage::delete($event->image);
+        }
+
         $event->delete();
 
         return redirect()->route("events.index");
