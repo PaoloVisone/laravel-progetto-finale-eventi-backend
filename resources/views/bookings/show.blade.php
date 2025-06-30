@@ -4,7 +4,7 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-primary mb-0">
-            Dettaglio Pronatione
+            Dettaglio Prenotazione
         </h2>
         <a href="{{ route('bookings.index') }}" class="btn btn-outline-secondary">
             Torna indietro
