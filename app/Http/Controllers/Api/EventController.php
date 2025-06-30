@@ -11,7 +11,7 @@ class EventController extends Controller
     public function index()
     {
 
-        $events = Event::all();
+        $events = Event::with('category')->get();
 
         // dd($events);
 
@@ -26,13 +26,13 @@ class EventController extends Controller
     public function show(Event $event)
     {
 
-        $event->load('category', "bookings");
+        $event = Event::with('category', 'bookings')->find($event->id);
 
         // dd($event);
 
         return response()->json([
             "success" => true,
-            "data" => $event
+            "data" => $event,
         ]);
     }
 }
