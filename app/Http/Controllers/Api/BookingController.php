@@ -21,8 +21,8 @@ class BookingController extends Controller
                 'event_id' => 'required|integer|exists:events,id',
                 'user_name' => 'required|string|max:255',
                 'user_email' => 'required|email|max:255',
-                'user_phone' => 'required|string|max:20',
-                'tickets' => 'required|integer|min:1|max:10',
+                'user_phone' => 'nullable|string|max:20',
+                'tickets' => 'required|integer|min:1|max:10'
             ]);
 
             // 2. Transazione per consistenza dati
@@ -43,15 +43,14 @@ class BookingController extends Controller
                 $totalPrice = $event->price * $validated['tickets'];
 
                 // 5. Crea prenotazione
-                $booking = Booking::create([
-                    'event_id' => $event->id,
-                    'user_name' => $validated['user_name'],
-                    'user_email' => $validated['user_email'],
-                    'user_phone' => $validated['user_phone'],
-                    'tickets' => $validated['tickets'],
-                    'status' => 'confirmed',
-                    'check_in' => false,
-                ]);
+                $booking = new Booking();
+                $booking->event_id = $validated['event_id'];
+                $booking->user_name = $validated['user_name'];
+                $booking->user_email = $validated['user_email'];
+                $booking->user_phone = $validated['user_phone'] ?? null;
+                $booking->tickets = $validated['tickets'];
+                $booking->save();
+
 
                 // 6. Aggiorna posti prenotati
                 $event->increment('booked_seats', $validated['tickets']);
