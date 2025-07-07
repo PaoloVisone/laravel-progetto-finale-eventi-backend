@@ -15,4 +15,17 @@ class Event extends Model
     {
         return $this->hasMany(Booking::class);
     }
+
+    // Metodo per verificare la disponibilità
+    public function getAvailableSeatsAttribute()
+    {
+        return $this->capacity - $this->booked_seats;
+    }
+
+    // Metodo per prenotare posti
+    public function bookSeats($quantity)
+    {
+        $this->increment('booked_seats', $quantity);
+        return $this;
+    }
 }
