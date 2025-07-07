@@ -10,8 +10,7 @@ class EventController extends Controller
 {
     public function index()
     {
-
-        $events = Event::with('category')->get();
+        $events = Event::with('category')->orderBy('date_time', 'asc')->get();
 
         // dd($events);
 
