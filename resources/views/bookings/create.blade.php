@@ -9,6 +9,13 @@
         </a>
     </div>
 </div>
+
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card">
@@ -29,7 +36,7 @@
                             <option value="">Seleziona un evento</option>
                             @foreach($events as $event)
                                 <option value="{{ $event->id }}" {{ old('event_id') == $event->id ? 'selected' : '' }}>
-                                    {{ $event->title }}
+                                    {{ $event->title }} (€{{ number_format($event->price, 2) }})
                                 </option>
                             @endforeach
                         </select>
@@ -79,8 +86,7 @@
                                class="form-control @error('user_phone') is-invalid @enderror" 
                                id="user_phone" 
                                name="user_phone" 
-                               value="{{ old('user_phone') }}" 
-                               required>
+                               value="{{ old('user_phone') }}">
                         @error('user_phone')
                             <div class="invalid-feedback">
                                 {{ $message }}
@@ -95,8 +101,9 @@
                                class="form-control @error('tickets') is-invalid @enderror" 
                                id="tickets" 
                                name="tickets" 
-                               value="{{ old('tickets') }}" 
+                               value="{{ old('tickets', 1) }}" 
                                min="1" 
+                               max="10"
                                required>
                         @error('tickets')
                             <div class="invalid-feedback">
@@ -105,38 +112,27 @@
                         @enderror
                     </div>
 
-                    <!-- Campo Status (select) -->
-                    <div class="mb-3">
-                        <label for="status" class="form-label">Stato Prenotazione</label>
-                        <select class="form-select @error('status') is-invalid @enderror" 
-                                id="status" 
-                                name="status">
-                            <option value="pending" {{ old('status', 'pending') == 'pending' ? 'selected' : '' }}>In attesa</option>
-                            <option value="confirmed" {{ old('status') == 'confirmed' ? 'selected' : '' }}>Confermato</option>
-                            <option value="cancelled" {{ old('status') == 'cancelled' ? 'selected' : '' }}>Cancellato</option>
+                    <!-- Metodo di Pagamento (nascosto inizialmente) -->
+                    <div class="mb-3 d-none payment-method-field">
+                        <label for="payment_method" class="form-label">Metodo di Pagamento</label>
+                        <select class="form-select @error('payment_method') is-invalid @enderror" 
+                                id="payment_method" 
+                                name="payment_method">
+                            <option value="">Seleziona metodo</option>
+                            <option value="credit_card" {{ old('payment_method') == 'credit_card' ? 'selected' : '' }}>Carta di Credito</option>
+                            <option value="paypal" {{ old('payment_method') == 'paypal' ? 'selected' : '' }}>PayPal</option>
+                            <option value="bank_transfer" {{ old('payment_method') == 'bank_transfer' ? 'selected' : '' }}>Bonifico Bancario</option>
+                            <option value="cash" {{ old('payment_method') == 'cash' ? 'selected' : '' }}>Contanti</option>
                         </select>
-                        @error('status')
+                        @error('payment_method')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>
                         @enderror
                     </div>
-                    
-                    <!-- Campo Check-in (checkbox) -->
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" 
-                               class="form-check-input @error('check_in') is-invalid @enderror" 
-                               id="check_in" 
-                               name="check_in" 
-                               value="1" 
-                               {{ old('check_in') ? 'checked' : '' }}>
-                        <label class="form-check-label" for="check_in">Check-in effettuato</label>
-                        @error('check_in')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
+
+                    <!-- Stato Pagamento (nascosto, impostato automaticamente a 'pending') -->
+                    <input type="hidden" name="payment_status" value="pending">
 
                     <div class="d-flex justify-content-between mt-4">
                         <a href="{{ route('bookings.index') }}" class="btn btn-secondary">
@@ -151,4 +147,16 @@
         </div>
     </div>
 </div>
+
+@section('scripts')
+<script>
+    // Mostra/nascondi il metodo di pagamento in base alla selezione
+    document.addEventListener('DOMContentLoaded', function() {
+        const eventSelect = document.getElementById('event_id');
+        const paymentMethodField = document.querySelector('.payment-method-field');
+    
+    });
+</script>
+@endsection
+
 @endsection

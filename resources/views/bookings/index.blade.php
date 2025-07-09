@@ -2,7 +2,7 @@
 
 @section("content")
 
-{{--NAVBAR --}}
+{{-- NAVBAR --}}
 <div class="container-fluid my-4">
     <div class="d-flex justify-content-between align-items-center">
         <h1 class="mb-0">Gestione Prenotazioni</h1>
@@ -22,9 +22,10 @@
                 <th style="padding: 10px; border: 1px solid #ddd;">Email</th>
                 <th style="padding: 10px; border: 1px solid #ddd;">Telefono</th>
                 <th style="padding: 10px; border: 1px solid #ddd;">Tickets</th>
-                <th style="padding: 10px; border: 1px solid #ddd;">Stato</th>
-                <th style="padding: 10px; border: 1px solid #ddd;">Check-in</th>
-                <th></th>
+                <th style="padding: 10px; border: 1px solid #ddd;">Prezzo Totale</th>
+                <th style="padding: 10px; border: 1px solid #ddd;">Metodo Pagamento</th>
+                <th style="padding: 10px; border: 1px solid #ddd;">Stato Pagamento</th>
+                <th style="padding: 10px; border: 1px solid #ddd;">Azioni</th>
             </tr>
         </thead>
         <tbody>
@@ -35,25 +36,35 @@
                 <td style="padding: 10px;">{{ $booking->user_email }}</td>
                 <td style="padding: 10px;">{{ $booking->user_phone }}</td>
                 <td style="padding: 10px;">{{ $booking->tickets }}</td>
-                <td style="padding: 10px;" class="
-                    @if($booking->status == 'confirmed') text-success
-                    @elseif($booking->status == 'cancelled') text-danger
-                    @else text-warning @endif">
-
-                    @if($booking->status == 'pending')
-                        In attesa
-                    @elseif($booking->status == 'confirmed')
-                        Confermato
+                <td style="padding: 10px;">€ {{ number_format($booking->total_price, 2) }}</td>
+                <td style="padding: 10px;">
+                    @if($booking->payment_method)
+                        {{ ucfirst(str_replace('_', ' ', $booking->payment_method)) }}
                     @else
-                        Cancellato
+                        Non specificato
                     @endif
                 </td>
-                <td style="padding: 10px;" class="{{ $booking->check_in ? 'text-success' : 'text-danger' }}">
-                {{ $booking->check_in ? 'Completato' : 'In attesa' }}
+                <td style="padding: 10px;" class="
+                    @if($booking->payment_status == 'completed') text-success
+                    @elseif($booking->payment_status == 'failed') text-danger
+                    @elseif($booking->payment_status == 'refunded') text-info
+                    @else text-warning @endif">
+                    
+                    @if($booking->payment_status == 'pending')
+                        In attesa
+                    @elseif($booking->payment_status == 'completed')
+                        Completato
+                    @elseif($booking->payment_status == 'failed')
+                        Fallito
+                    @else
+                        Rimborsato
+                    @endif
                 </td>
-                <td style="padding: 10px;"><a href="{{ route('bookings.show', $booking) }}" class="btn btn-outline-secondary">
-            Dettagli
-        </a></td>
+                <td style="padding: 10px;">
+                    <a href="{{ route('bookings.show', $booking) }}" class="btn btn-outline-secondary">
+                        Dettagli
+                    </a>
+                </td>
             </tr>
             @endforeach
         </tbody>

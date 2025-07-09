@@ -11,11 +11,11 @@ class BookingSeeder extends Seeder
 {
     public function run(Faker $faker): void
     {
-
         // Recupero tutti i record dalla tabella events
         $events = Event::all();
 
-        $statuses = ['pending', 'confirmed', 'cancelled'];
+        $paymentStatuses = ['pending', 'completed', 'failed', 'refunded'];
+        $paymentMethods = ['credit_card', 'paypal', 'bank_transfer'];
 
         // Per ogni evento...
         foreach ($events as $event) {
@@ -23,17 +23,19 @@ class BookingSeeder extends Seeder
             $bookingsCount = rand(5, 15);
 
             for ($i = 0; $i < $bookingsCount; $i++) {
-                $status = $faker->randomElement($statuses);
+                $tickets = rand(1, 4);
+                $paymentStatus = $faker->randomElement($paymentStatuses);
+                $isCompleted = $paymentStatus === 'completed';
 
                 Booking::create([
-                    // Creo una prenotazione per un evento specifico
                     'event_id' => $event->id,
                     'user_name' => $faker->name,
                     'user_email' => $faker->unique()->safeEmail,
                     'user_phone' => $faker->phoneNumber,
-                    'tickets' => rand(1, 4),
-                    'status' => $status,
-                    'check_in' => $status === 'confirmed' ? $faker->boolean(30) : false,
+                    'tickets' => $tickets,
+                    'payment_method' => $isCompleted ? $faker->randomElement($paymentMethods) : null,
+                    'total_price' => $event->price * $tickets,
+                    'payment_status' => $paymentStatus,
                 ]);
             }
         }

@@ -18,8 +18,9 @@ return new class extends Migration
             $table->string('user_email');
             $table->string('user_phone')->nullable();
             $table->integer('tickets')->unsigned();
-            $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
-            $table->boolean('check_in')->default(false);
+            $table->string('payment_method')->nullable();
+            $table->decimal('total_price', 10, 2);
+            $table->enum('payment_status', ['pending', 'completed', 'failed', 'refunded'])->default('pending');
             $table->timestamps();
         });
     }

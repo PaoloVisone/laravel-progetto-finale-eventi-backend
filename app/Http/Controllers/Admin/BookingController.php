@@ -14,10 +14,7 @@ class BookingController extends Controller
      */
     public function index()
     {
-        $bookings = Booking::all();
-
-        // dd($bookings);
-
+        $bookings = Booking::with('event')->get();
         return view("bookings.index", compact('bookings'));
     }
 
@@ -33,20 +30,20 @@ class BookingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-
     public function store(Request $request)
     {
         $data = $request->all();
+        $event = Event::find($data["event_id"]);
 
         $newBooking = new Booking();
-
         $newBooking->event_id = $data["event_id"];
         $newBooking->user_name = $data["user_name"];
         $newBooking->user_email = $data["user_email"];
         $newBooking->user_phone = $data["user_phone"];
         $newBooking->tickets = $data["tickets"];
-        $newBooking->status = 'pending';
-        $newBooking->check_in = false;
+        $newBooking->payment_method = null;
+        $newBooking->total_price = $event->price * $data["tickets"];
+        $newBooking->payment_status = 'pending';
 
         $newBooking->save();
 
@@ -68,7 +65,6 @@ class BookingController extends Controller
     public function edit(Booking $booking)
     {
         $events = Event::all();
-
         return view('bookings.edit', compact('booking', 'events'));
     }
 
@@ -78,16 +74,15 @@ class BookingController extends Controller
     public function update(Request $request, Booking $booking)
     {
         $data = $request->all();
-
-        $booking = new Booking();
+        $event = Event::find($data["event_id"]);
 
         $booking->event_id = $data["event_id"];
         $booking->user_name = $data["user_name"];
         $booking->user_email = $data["user_email"];
         $booking->user_phone = $data["user_phone"];
         $booking->tickets = $data["tickets"];
-        $booking->status = 'pending';
-        $booking->check_in = false;
+        $booking->total_price = $event->price * $data["tickets"];
+        $booking->payment_status = $data["payment_status"] ?? 'pending';
 
         $booking->save();
 
@@ -100,7 +95,6 @@ class BookingController extends Controller
     public function destroy(Booking $booking)
     {
         $booking->delete();
-
         return redirect()->route("bookings.index");
     }
 }

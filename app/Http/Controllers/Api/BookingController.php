@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Event;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
@@ -17,7 +16,8 @@ class BookingController extends Controller
             'user_name' => 'required|string|max:255',
             'user_email' => 'required|email|max:255',
             'user_phone' => 'nullable|string|max:20',
-            'tickets' => 'required|integer|min:1|max:80'
+            'tickets' => 'required|integer|min:1|max:80',
+            'payment_method' => 'nullable|in:credit_card,paypal,bank_transfer'
         ]);
 
         $event = Event::findOrFail($request->event_id);
@@ -38,6 +38,9 @@ class BookingController extends Controller
         $booking->user_email = $request->user_email;
         $booking->user_phone = $request->user_phone;
         $booking->tickets = $request->tickets;
+        $booking->total_price = $event->price * $request->tickets;
+        $booking->payment_status = 'pending';
+        $booking->payment_method = $request->payment_method;
         $booking->save();
 
         // Aggiorna posti prenotati
@@ -46,16 +49,13 @@ class BookingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Prenotazione confermata con successo!',
-            'data' => [
-                'booking' => $booking,
-                'event' => $event->fresh()
-            ]
+            'data' => $booking->load('event')
         ], 201);
     }
 
     public function index()
     {
-        $bookings = Booking::with('event')->orderBy('created_at', 'desc')->get();
+        $bookings = Booking::with('event')->latest()->get();
 
         return response()->json([
             'success' => true,
@@ -65,19 +65,17 @@ class BookingController extends Controller
 
     public function show(Booking $booking)
     {
-        $booking->load('event');
-
         return response()->json([
             'success' => true,
-            'data' => $booking
+            'data' => $booking->load('event')
         ]);
     }
 
     public function update(Request $request, Booking $booking)
     {
         $validated = $request->validate([
-            'status' => 'sometimes|in:pending,confirmed,cancelled',
-            'check_in' => 'sometimes|boolean'
+            'payment_status' => 'sometimes|in:pending,completed,failed,refunded',
+            'payment_method' => 'sometimes|in:credit_card,paypal,bank_transfer'
         ]);
 
         $booking->update($validated);
@@ -85,14 +83,14 @@ class BookingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Prenotazione aggiornata con successo',
-            'data' => $booking->load('event')
+            'data' => $booking
         ]);
     }
 
     public function destroy(Booking $booking)
     {
-        // Ripristina posti se confermata
-        if ($booking->status === 'confirmed') {
+        // Ripristina posti se pagamento completato
+        if ($booking->payment_status === 'completed') {
             $booking->event->decrement('booked_seats', $booking->tickets);
         }
 

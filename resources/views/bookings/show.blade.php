@@ -24,31 +24,34 @@
                         <div class="col-md-6">
                             <div>
                                 <div class="fw-semibold small text-muted">Evento</div>
-                                <div>{{$booking->event->title}}</div>
+                                <div>{{ $booking->event->title }}</div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div>
-                              <div class="fw-semibold small text-muted">Stato della prenotazione</div>
-                                    <div class="
-                                        @if($booking->status == 'confirmed') text-success
-                                        @elseif($booking->status == 'cancelled') text-danger
-                                        @else text-warning @endif">
-
-                                        @if($booking->status == 'pending')
-                                            <i class="fas fa-clock me-1"></i> In attesa
-                                        @elseif($booking->status == 'confirmed')
-                                            <i class="fas fa-check-circle me-1"></i> Confermato
-                                        @else
-                                            <i class="fas fa-times-circle me-1"></i> Cancellato
-                                        @endif
-                                    </div>
+                                <div class="fw-semibold small text-muted">Stato del pagamento</div>
+                                <div class="
+                                    @if($booking->payment_status == 'completed') text-success
+                                    @elseif($booking->payment_status == 'failed') text-danger
+                                    @elseif($booking->payment_status == 'refunded') text-info
+                                    @else text-warning @endif">
+                                    
+                                    @if($booking->payment_status == 'pending')
+                                        <i class="fas fa-clock me-1"></i> In attesa
+                                    @elseif($booking->payment_status == 'completed')
+                                        <i class="fas fa-check-circle me-1"></i> Completato
+                                    @elseif($booking->payment_status == 'failed')
+                                        <i class="fas fa-times-circle me-1"></i> Fallito
+                                    @else
+                                        <i class="fas fa-undo me-1"></i> Rimborsato
+                                    @endif
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div>
                                 <div class="fw-semibold small text-muted">Numero di telefono</div>
-                                <div>{{ $booking->user_phone }} </div>
+                                <div>{{ $booking->user_phone ?? 'N/D' }}</div>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -58,12 +61,22 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                        <div>
-                                <div class="fw-semibold small text-muted">Check-in</div>
-                                  <div class="{{ $booking->check_in ? 'text-success' : 'text-danger' }}">
-                                                {{ $booking->check_in ? 'Completato' : 'In attesa' }}
-                                  </div>
+                            <div>
+                                <div class="fw-semibold small text-muted">Metodo di pagamento</div>
+                                <div>
+                                    @if($booking->payment_method)
+                                        {{ ucfirst(str_replace('_', ' ', $booking->payment_method)) }}
+                                    @else
+                                        Non specificato
+                                    @endif
                                 </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div>
+                                <div class="fw-semibold small text-muted">Prezzo totale</div>
+                                <div>€ {{ number_format($booking->total_price, 2) }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -77,13 +90,12 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="{{ route('bookings.edit', $booking) }}" class="btn btn-warning" aria-disabled="true">
+                        <a href="{{ route('bookings.edit', $booking) }}" class="btn btn-warning">
                             Modifica
                         </a>
-                        
-            <button type="submit" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-danger btn-delete">
-                Elimina
-            </button>
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal" class="btn btn-danger">
+                            Elimina
+                        </button>
                     </div>
                 </div>
             </div>
@@ -92,33 +104,34 @@
                     <h5 class="mb-0">Informazioni</h5>
                 </div>
                 <div class="card-body">
-                    <p class="mb-2"><strong>Creato il:</strong> {{ \Carbon\Carbon::parse($booking->created_at)->format('d/m/Y H:i') }}</p>
-                    <p class="mb-0"><strong>Ultima modifica:</strong> {{ \Carbon\Carbon::parse($booking->updated_at)->format('d/m/Y H:i') }}</p>
+                    <p class="mb-2"><strong>Creato il:</strong> {{ $booking->created_at->format('d/m/Y H:i') }}</p>
+                    <p class="mb-0"><strong>Ultima modifica:</strong> {{ $booking->updated_at->format('d/m/Y H:i') }}</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">STAI ELIMINADO LA PRENOTAZIONE</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        Eliminare definitivamente la prenotazione?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-        <form method="POST" action="{{ route('bookings.destroy', $booking) }}" class="d-grid gap-2">
-            @csrf
-            @method('DELETE')
-            <input type="submit" class="btn btn-danger" value="Elimina">
-        </form>
-      </div>
+
+<!-- Modal Eliminazione -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Conferma eliminazione</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Sei sicuro di voler eliminare definitivamente questa prenotazione?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <form method="POST" action="{{ route('bookings.destroy', $booking) }}">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Conferma eliminazione</button>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 @endsection
