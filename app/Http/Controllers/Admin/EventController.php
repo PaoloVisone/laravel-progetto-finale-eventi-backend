@@ -96,13 +96,14 @@ class EventController extends Controller
         $event->capacity = $data["capacity"];
         $event->category_id = $data["category_id"];
 
-        if (array_key_exists("image", $data)) {
-            if ($event->image) {
+        if ($request->hasFile('image')) {
+            // Elimina l'immagine precedente se esiste
+            if ($event->image && Storage::exists($event->image)) {
                 Storage::delete($event->image);
             }
 
-            $img_url = Storage::putFile("imgEvents", $data['image']);
-            $event->image = $img_url;
+            // Sovrascrivi con la nuova immagine
+            $event->image = $request->file('image')->store('imgEvents');
         }
 
         $event->update();

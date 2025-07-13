@@ -19,7 +19,7 @@ class BookingController extends Controller
             'tickets' => 'required|integer|min:1|max:80',
             'payment_method' => 'nullable|in:credit_card,paypal,bank_transfer'
         ]);
-
+        // Se l'azione non va a buon fine blocca 
         $event = Event::findOrFail($request->event_id);
 
         // Verifica disponibilità
@@ -55,6 +55,7 @@ class BookingController extends Controller
 
     public function index()
     {
+        // Prendi Prenotazioni con eventi e ordinate dall'ultima e restituisci collation
         $bookings = Booking::with('event')->latest()->get();
 
         return response()->json([
@@ -86,10 +87,10 @@ class BookingController extends Controller
             'data' => $booking
         ]);
     }
-
+    // Eventualità di cancellazione prenotazione
     public function destroy(Booking $booking)
     {
-        // Ripristina posti se pagamento completato
+        // Aggiorna i posti rimasti se pagamento completato
         if ($booking->payment_status === 'completed') {
             $booking->event->decrement('booked_seats', $booking->tickets);
         }
