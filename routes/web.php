@@ -32,7 +32,9 @@ Route::middleware(['auth', 'verified'])
     });
 
 // CRUD Events
-Route::resource('events', EventController::class);
+Route::resource('events', EventController::class)
+    ->middleware(['auth', 'verified']);
 
 // CRUD Bookings
-Route::resource('bookings', BookingController::class);
+Route::resource('bookings', BookingController::class)
+    ->middleware(['auth', 'verified']);
