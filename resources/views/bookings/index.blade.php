@@ -13,7 +13,7 @@
 </div>
 
 {{-- TABLE --}}
-<div style="width: 90%; margin: 0 auto;">
+<div style="width: 100%; margin: 0 auto;">
     <table style="width: 100%; border-collapse: collapse; text-align: center; margin: 20px 0;">
         <thead>
             <tr style="background-color: #f2f2f2;">
